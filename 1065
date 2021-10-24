@@ -1,0 +1,30 @@
+import java.util.Scanner;
+public class Main{
+    public static void main(String[] args){
+        Scanner sc = new Scanner(System.in);
+        int a = sc.nextInt();
+        int b = sc.nextInt();
+        int c = sc.nextInt();
+        int d = a%2;
+        int e = b%2;
+        int f = c%2;
+        switch(d){
+            case 0 : 
+                System.out.println(a);
+                break;
+            case 1 : 
+                break;}
+        switch(e){
+            case 0 : 
+                System.out.println(b);
+                break;
+            case 1 : 
+                break;}
+        switch(f){
+            case 0 : 
+                System.out.println(c);
+                break;
+            case 1 : 
+                break;}   
+    }
+}
