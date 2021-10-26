@@ -1,0 +1,23 @@
+public class java100_method_ExamStatic2 {
+
+	public static void hellowWorld() {
+		System.out.println("Hello, World~");
+	}
+
+	public static void main(String[] args) {
+		helloWorld();
+	}
+}
+
+// 위에 코드에서 static 제거
+
+	public void helloWorld() {
+		System.out.println("Hello, World~");
+	}
+
+	public static void main(String[] args) {
+		//hellowWorld(); static 메소드가 아니라 호출 불가능
+		
+		//[2]객체를 메인메서드안에서 생성 후 메서드 호출
+		Java100_method_ExamStatic2 jes = new Java100_method_ExamStatic2();
+		jes.hellowWorld();
