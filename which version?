@@ -1,0 +1,92 @@
+ojdbc와 jdk 버전
+DB/Oracle 2018. 4. 26. 10:49
+ 이번에 보안 이슈로 인해 마이그레이션 이슈가 생겨 spring을 3.x에서 4.x로  전환 테스트하다보니 문제가 발생했다. DB쪽에서 계속 오류가 발생하는데 처음에는 관련 라이브러리도 버전을 변경하다보니 발생하는 문제라 생각했는데, mybatis 버전을 아무리 바꿔도 안되고, 연동방식을 아무리 바꾸어도 안되는 것이다...
+
+ 안되겠다 싶어 jdbctemplate으로 바꾸었는데도 안된다... 모두 동일한 오류가 발생했다.
+
+20:05:13.240 [http-nio-80-exec-2] DEBUG org.mybatis.spring.SqlSessionUtils - SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@d8269a0] was not registered for synchronization because synchronization is not active
+
+20:05:13.297 [http-nio-80-exec-2] DEBUG o.s.jdbc.datasource.DataSourceUtils - Fetching JDBC Connection from DataSource
+
+java.lang.NoClassDefFoundError: Could not initialize class core.log.conf.reloadable.ReloadableConfiguration
+
+
+
+ 검색을 아무리 해봐도 내용을 알수가 없어서... 혹시나하고 jdbctemplate은 그대로 두고 ojdbc6.jar를 ojdbc7.jar로 바꿔보니 에러코드가 바뀌었다. 일단 쿼리까지 읽어내는 것이다. 좀 더 테스트해봐야하지만, 오라클 홈페이지에서 jdk7,jdk8 지원한다는 ojdbc6.jar을 다운받아서 사용했는데, 이게 뭔가 다른 문제인듯 하다.
+
+
+
+ 지금 테스트 환경은 다음과 같다.
+
+Oracle Database 11g Release 11.2.0.3
+JDK 1.8
+Spring 4.3.15
+Tomcat8.0
+
+
+그래서 검색방법을 바꾸어서 11g에서 사용가능한 ojdbc를 찾아보았다.
+
+참고: http://www.oracle.com/technetwork/database/enterprise-edition/jdbc-faq-090281.html#01_02
+
+
+
+위 링크에서 보면 다음과 같이 정리가 되어있다.
+
+Which version of JDBC drivers support which version of Oracle database?
+
+Please refer to the table below for the Oracle database versions supported by JDBC drivers.  Best Practice that we recommend is, JDBC driver version should always be either same as or higher than the Oracle database version being used in order to leverage the latest capabilities of the JDBC driver. 
+
+Interoperability Matrix	Database 12.2.0.1	Database 12.1.0.x	Database 11.2.0.x
+JDBC 12.2.0.1	
+Yes
+Yes
+Yes
+JDBC 12.1.0.x	
+Yes
+Yes
+Yes
+JDBC 11.2.0.x	
+Yes
+Yes
+Yes
+
+
+
+
+이걸로 보면 jdbc 12.2.0.1도 11.2.0.3에서 사용할 수 있어보인다. jdk 지원 정보를 보면 다음과 같다.
+
+What are the Oracle JDBC releases versus JDK versions? 
+
+The Oracle JDBC driver is always compliant to the latest JDK version in each of the new releases. In some versions, JDBC drivers support multiple JDK versions.  Use the table below  to choose the correct JDBC driver based on your preferred JDK version.   
+ 
+Oracle Database version
+JDBC Jar files specific to the release
+12.2 or 12cR2	ojdbc8.jar with JDK 8
+12.1 or 12cR1	ojdbc7.jar with JDK 7 and JDK 8
+ojdbc6.jar with JDK 6
+11.2 or 11gR2	ojdbc6.jar with JDK 6, JDK 7, and JDK 8 
+(Note: JDK7 and JDK8 are supported in 11.2.0.3 and 11.2.0.4 only)
+ojdbc5.jar with JDK 5
+
+
+
+
+What are the Oracle JDBC releases versus JDBC specifications? 
+
+The table lists the Oracle JDBC drivers and the JDBC specification supported in that release. 
+ 
+
+Oracle Database version
+JDBC specification compliance
+12.2 or 12cR2	JDBC 4.2 in ojdbc8.jar
+12.1 or 12cR1	JDBC 4.1 in ojdbc7.jar 
+JDBC 4.0 in ojdbc6.jar
+11.2 or 11gR2	JDBC 4.0 in ojdbc6.jar
+JDBC 3.0 in ojdbc5.jar
+
+
+ojdbc6가 jdk8을 지원한다는데 저걸 다운받아 사용해봤는데, 안된다... 검색하다보면 된다는 사람도 있어서 좀 당황스러운데... 된다고 공유하는 패키지도 나는 안되는 걸 보면 뭔가 다른 이유가 있을지도....
+
+
+
+출처: https://junemoon.tistory.com/191 [*을 공부하자]
